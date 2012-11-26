@@ -2,34 +2,11 @@
 
 <div class="row">
   <% @beer_taps.each do |beer_tap| %>
-    <div class="well span6">
-      <h2><%= beer_tap.name.titleize %> Tap</h2>
-      <% if beer_tap.detached? %>
-        <%= render 'sadface' %>
-      <% else %>
-      <h4><%= beer_tap.keg.beer.name %></h4>
-      <div class="pull-left">
-        <h4><%= beer_tap.keg.beer.abv %>%</h4>
-      </div>
-      <div class="pull-right">
-        <h4>
-          <%= number_with_precision(beer_tap.keg.remaining, :precision => 2) %>
-          /
-          <%= number_with_precision(beer_tap.keg.capacity, :precision => 2) %>&nbsp;
-        </h4>
-      </div>
-      <div class="clearfix"></div>
-      <div class="progress">
-        <div class="bar bar-<%= beer_tap.keg.status %>" style="width: <%= beer_tap.keg.ratio %>%;">
-          <% if beer_tap.keg.below_threshold? %>
-          <div>Running Low!</div>
-          <% end %>
-        </div>
-      </div>
-      <% end %>
-    </div>
+    <%= render :partial => 'kegs/beer_tap', :locals => {:beer_tap => beer_tap} %>
   <% end %>
 </div>
+
+<% if current_user.admin? %>
 
 <h1>To Order Next:</h1>
 
@@ -39,51 +16,9 @@
   </div>
 </div>
 
+<% end %>
+
 
 <h1>&#9765; The Bible &#9765;</h1>
 
-<div class="well row">
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th></th>
-        <th>Vote!</th>
-        <th>Brewery</th>
-        <th></th>
-        <th>Colour</th>
-        <th>Alcohol</th>
-        <th>IBUs</th>
-      </tr>
-    </thead>
-
-    <tbody>
-      <% @beers.each do |beer| %>
-      <tr>
-        <td>
-          <%= beer.name %>&nbsp;
-        </td>
-        <% if current_user.admin? %>
-        <td>
-          <%= link_to "Order by Email", beer.email_order %>
-        </td>
-        <% else %>
-        <td></td>
-        <% end %>
-        <td>
-          <a href="/upvote?beer_id=<%=beer.id%>">Like it!</a>&nbsp;|&nbsp;<a href="/downvote?beer_id=<%=beer.id%>">Dislike it</a>
-        </td>
-        <td><%= beer.brewery %></td>
-        <% if current_user.admin? %>
-        <td><%= link_to 'Call Em Up!', call_brewery_url(beer.manufacturer) %></td>
-        <% end %>
-        <td><%= beer.abv %>%</td>
-        <td style="<%= color_for_srm(beer.srm) %>" class="beer-colour">
-          <%= beer.srm %>
-        </td>
-        <td><%= beer.ibus %>
-      </tr>
-      <% end %>
-    </tbody>
-  </table>
-</div>
+<%= render 'beer_list' %>
